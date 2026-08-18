@@ -1,0 +1,19 @@
+# Example manifest for Salamander-style samples
+[
+  {
+    "file": "A0.wav",
+    "root": 21,
+    "lo": 21,
+    "hi": 21,
+    "vel_lo": 1,
+    "vel_hi": 127
+  },
+  {
+    "file": "C4_forte_rr1.wav",
+    "root": 60,
+    "lo": 60,
+    "hi": 60,
+    "vel_lo": 90,
+    "vel_hi": 127
+  }
+]

@@ -43,6 +43,14 @@ bool PianoSamplerAudioProcessor::loadSampleDirectory (const juce::File& dir)
 {
     if (!dir.exists() || !dir.isDirectory()) return false;
 
+    auto manifestFile = dir.getChildFile ("manifest.json");
+    if (manifestFile.existsAsFile())
+    {
+        if (sampleManager.loadManifest (manifestFile, synth, formatManager))
+            return true;
+        // fall through to naive loader if manifest failed
+    }
+
     auto files = dir.findChildFiles (juce::File::findFiles, false, "*.wav");
     if (files.size() == 0)
         return false;
@@ -63,6 +71,8 @@ bool PianoSamplerAudioProcessor::loadSampleDirectory (const juce::File& dir)
         juce::BigInteger allNotes;
         allNotes.setRange (0, 128, true);
 
+        double maxLenSec = (double) reader->lengthInSamples / juce::jmax (1.0, reader->sampleRate);
+
         // Create a SamplerSound that covers all notes; SampleManager can be extended to create ranges & velocity bands
         auto* sound = new juce::SamplerSound (f.getFileNameWithoutExtension().toStdString(),
                                               *buffer,
@@ -70,7 +80,7 @@ bool PianoSamplerAudioProcessor::loadSampleDirectory (const juce::File& dir)
                                               rootMidi,
                                               0.0, // attack
                                               0.0, // release
-                                              reader->sampleRate);
+                                              maxLenSec);
 
         synth.addSound (sound);
         delete reader;
